@@ -15,9 +15,12 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 
 app.post("/ask", async (req, res) => {
+  console.log("📥 Odebrano zapytanie:", req.body);
+
   const input = req.body.prompt || "";
 
   if (!input.trim()) {
+    console.warn("⚠️ Pusty prompt!");
     return res.status(400).json({ error: "Prompt cannot be empty." });
   }
 
