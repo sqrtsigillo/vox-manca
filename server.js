@@ -40,6 +40,8 @@ app.post("/ask", async (req, res) => {
       }
     );
 
+    console.log("📦 Odpowiedź z OpenRouter:", JSON.stringify(response.data, null, 2));
+
     const output =
       response.data?.choices?.[0]?.message?.content ||
       response.data?.choices?.[0]?.text;
