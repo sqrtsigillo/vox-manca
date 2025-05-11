@@ -17,6 +17,7 @@ app.post("/ask", async (req, res) => {
   console.log("📥 Odebrano zapytanie:", req.body);
 
   const input = req.body.message || "";
+  const model = req.body.model || "openai/gpt-3.5-turbo";
 
   if (!input.trim()) {
     console.warn("⚠️ Pusty prompt!");
@@ -27,7 +28,7 @@ app.post("/ask", async (req, res) => {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "openai/gpt-3.5-turbo",
+        model: model,
         messages: [{ role: "user", content: input }],
       },
       {
