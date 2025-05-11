@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minimal Vox Debugger</title>
+  <style>
+    body { background: #111; color: #fff; font-family: monospace; padding: 2rem; }
+    input, button { padding: 0.5rem; font-size: 1rem; }
+    #output { margin-top: 2rem; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Vox Debugger</h1>
+  <input id="prompt" type="text" placeholder="Zadaj pytanie..." size="40" />
+  <button onclick="send()">Wyślij</button>
+  <div id="output"></div>
+
+  <script>
+    async function send() {
+      const message = document.getElementById('prompt').value;
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: message,
+          model: 'anthropic/claude-3-haiku'
+        })
+      });
+      const data = await res.json();
+      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>

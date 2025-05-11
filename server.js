@@ -47,6 +47,7 @@ app.post("/ask", async (req, res) => {
       response.data?.choices?.[0]?.message?.content;
 
     if (output) {
+      res.setHeader("Content-Type", "application/json");
       res.json({ response: output });
     } else {
       console.error("⚠️ Brak danych w odpowiedzi:", response.data);
