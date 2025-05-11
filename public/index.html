@@ -180,8 +180,13 @@
 
         const data = await response.json();
 
-        if (data.choices?.[0]?.message?.content) {
-          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> ${data.choices[0].message.content}`;
+        if (data.response) {
+            replyDiv.innerHTML = `<div class="reply">${data.response}</div>`;
+          } else if (data.choices?.[0]?.message?.content) {
+            replyDiv.innerHTML = `<div class="reply">${data.choices[0].message.content}</div>`;
+          } else {
+            replyDiv.innerHTML = "<div class='reply'>⚠️ Brak odpowiedzi</div>";
+          }`;
         } else if (data.error) {
           replyDiv.innerHTML = `<strong>🔊 Vox:</strong> Błąd API: ${data.error.message}`;
         } else {
