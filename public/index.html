@@ -21,7 +21,7 @@
   </style>
 </head>
 <body>
-  <div class="background-image" id="bgImage"></div>
+  <div class="background-image" id="bgImage" style="opacity: 0.2;"></div>
   <div class="container">
     <h1 id="title" class="glitch-title">VoxMancer: Glitch Narrator</h1>
     <div class="controls">
@@ -181,12 +181,14 @@
         const data = await response.json();
 
         if (data.response) {
-            replyDiv.innerHTML = `<div class="reply">${data.response}</div>`;
-          } else if (data.choices?.[0]?.message?.content) {
-            replyDiv.innerHTML = `<div class="reply">${data.choices[0].message.content}</div>`;
-          } else {
-            replyDiv.innerHTML = "<div class='reply'>⚠️ Brak odpowiedzi</div>";
-          }`;
+          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> ${data.response}`;
+        } else if (data.choices?.[0]?.message?.content) {
+          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> ${data.choices[0].message.content}`;
+        } else if (data.error) {
+          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> Błąd API: ${data.error.message}`;
+        } else {
+          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> Brak odpowiedzi.`;
+        }`;
         } else if (data.error) {
           replyDiv.innerHTML = `<strong>🔊 Vox:</strong> Błąd API: ${data.error.message}`;
         } else {
