@@ -1,3 +1,15 @@
+/* GLOBAL STYLES */
+:root {
+  --primary-color: #aaffee;
+  --secondary-color: #ffe599;
+  --error-color: #ff6b6b;
+  --bg-dark: #0f0f0f;
+  --bg-darker: #1a1a1a;
+  --border-color: #555;
+  --text-light: #d1ffe8;
+}
+
+/* ANIMATIONS */
 @keyframes glitchText {
   0% { text-shadow: 2px 0 red; }
   20% { text-shadow: -2px 0 blue; }
@@ -13,19 +25,22 @@
 }
 
 @keyframes backgroundFlash {
-  0% { background-color: #0f0f0f; }
+  0% { background-color: var(--bg-dark); }
   50% { background-color: black; }
-  100% { background-color: #0f0f0f; }
+  100% { background-color: var(--bg-dark); }
 }
 
+/* BASE STYLES */
 body {
   margin: 0;
-  background: #0f0f0f;
-  color: #ddd;
+  background: var(--bg-dark);
+  color: var(--text-light);
   font-family: 'Courier New', Courier, monospace;
   transition: background-color 0.3s;
+  line-height: 1.6;
 }
 
+/* BACKGROUND */
 .background-image {
   position: fixed;
   top: 0;
@@ -47,84 +62,148 @@ body {
   opacity: 0.2 !important;
 }
 
+/* LAYOUT */
 .container {
   max-width: 600px;
   margin: 60px auto;
   padding: 20px;
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 10px;
+  backdrop-filter: blur(2px);
 }
 
+/* TYPOGRAPHY */
 .glitch-title {
   text-align: center;
-  color: #aaffee;
+  color: var(--primary-color);
   font-size: 1.8rem;
   margin-bottom: 20px;
   animation: glitchText 1.5s infinite;
 }
 
+/* FORM ELEMENTS */
 .controls {
   display: flex;
   gap: 10px;
+  margin-bottom: 15px;
 }
 
 select, .extra-button {
-  width: 50%;
-  background: #1a1a1a;
-  color: #aaffcc;
-  border: 1px solid #555;
+  flex: 1;
+  background: var(--bg-darker);
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
   padding: 10px;
   font-size: 1rem;
   box-sizing: border-box;
   text-align: center;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+select:hover, .extra-button:hover, button:hover {
+  filter: brightness(1.2);
 }
 
 textarea {
   width: 100%;
   min-height: 80px;
   max-height: 200px;
-  background: #1a1a1a;
-  color: #aaffcc;
-  border: 1px solid #555;
+  background: var(--bg-darker);
+  color: var(--primary-color);
+  border: 1px solid var(--border-color);
   padding: 10px;
   resize: none;
   font-size: 1rem;
   animation: glitchText 2s infinite alternate;
   overflow-y: auto;
   box-sizing: border-box;
+  transition: height 0.2s ease;
 }
 
 button {
   margin-top: 10px;
   width: 100%;
   background: #222;
-  color: #fff;
-  border: 1px solid #444;
-  padding: 10px;
+  color: white;
+  border: 1px solid var(--border-color);
+  padding: 12px;
   font-size: 1rem;
   cursor: pointer;
   animation: glitchText 3s infinite alternate;
+  transition: all 0.2s;
+}
+
+/* OUTPUT AREA */
+.output-wrapper {
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
 }
 
 .output {
-  margin-top: 20px;
   white-space: pre-wrap;
   font-size: 0.95rem;
-  line-height: 1.5;
-  background: #1a1a1a;
+  background: var(--bg-darker);
   padding: 15px;
   border: 1px solid #333;
-  color: #d1ffe8;
-  max-height: 300px;
-  overflow-y: auto;
+  color: var(--text-light);
   box-sizing: border-box;
 }
 
+.output div {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed rgba(85, 85, 85, 0.3);
+}
+
+.output div:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
 .output div.reply {
-  color: #ffe599;
+  color: var(--secondary-color);
 }
 
 .output.glitch-blink {
   animation: blinkGlitch 0.4s ease-in-out;
+}
+
+/* ERROR STATES */
+.error {
+  color: var(--error-color) !important;
+  font-style: italic;
+}
+
+/* SCROLLBAR (WebKit) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 640px) {
+  .container {
+    margin: 20px auto;
+    padding: 15px;
+  }
+  
+  .controls {
+    flex-direction: column;
+  }
+  
+  select, .extra-button {
+    width: 100%;
+  }
 }

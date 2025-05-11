@@ -17,17 +17,9 @@
       z-index: -1;
       opacity: 1;
     }
-    #output {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      overflow-y: auto;
-      scroll-behavior: smooth;
-    }
-    .output-wrapper {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+    .error {
+      color: #ff4444;
+      font-style: italic;
     }
   </style>
 </head>
@@ -43,24 +35,49 @@
         <option value="LEVEL IV">LEVEL IV – FOG_SIGNAL :: Diffused Meaning</option>
         <option value="LEVEL V">LEVEL V – PURE_SEED :: Total Semantic Drift™</option>
       </select>
-      <div class="extra-button" id="helpButton" onclick="displayHelp()">POMOC / HELP</div>
+      <div class="extra-button" id="helpButton">POMOC / HELP</div>
     </div>
-    <textarea id="userInput" placeholder="Wpisz swoją mantrę/Type your mantra..." oninput="autoResize(this)"></textarea>
-    <button id="submitBtn" onclick="sendToGPT()">Wywołaj VoxMancera</button>
+    <textarea id="userInput" placeholder="Wpisz swoją mantrę/Type your mantra..."></textarea>
+    <button id="submitBtn">Wywołaj VoxMancera</button>
     <div class="output-wrapper">
       <div id="output" class="output"></div>
     </div>
   </div>
 
   <script>
-    let currentModel = "anthropic/claude-3-haiku";
-    let currentLang = "pl";
+    // Konfiguracja
+    const config = {
+      currentModel: "anthropic/claude-3-haiku",
+      apiEndpoint: window.location.hostname === 'localhost' 
+        ? '/api/vox' 
+        : 'https://vox.sdrift.net/api/vox'
+    };
 
-    function autoResize(textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = textarea.scrollHeight + "px";
-    }
+    // Inicjalizacja
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auto-resize dla textarea
+      const userInput = document.getElementById('userInput');
+      userInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+      });
 
+      // Nasłuchiwanie Enter w polu tekstowym
+      userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendToGPT();
+        }
+      });
+
+      // Przycisk wysyłania
+      document.getElementById('submitBtn').addEventListener('click', sendToGPT);
+
+      // Przycisk pomocy
+      document.getElementById('helpButton').addEventListener('click', displayHelp);
+    });
+
+    // Efekt flash
     function triggerFlash() {
       const bg = document.getElementById("bgImage");
       document.body.classList.add("flash");
@@ -71,19 +88,22 @@
       }, 400);
     }
 
+    // Płynne przewijanie
     function scrollToElement(element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
+    // Wyświetlanie pomocy
     function displayHelp() {
       const output = document.getElementById("output");
       const help = document.createElement("div");
       help.className = "reply";
-      help.innerHTML = `📘 Tutaj wklej pełną instrukcję (jak poprzednio)...`;
+      help.innerHTML = `📘 Tutaj wklej pełną instrukcję...`;
       output.append(help);
       scrollToElement(help);
     }
 
+    // Główna funkcja wysyłająca
     async function sendToGPT() {
       const inputElem = document.getElementById('userInput');
       const level = document.getElementById('levelSelect').value;
@@ -93,52 +113,57 @@
       const output = document.getElementById('output');
       output.classList.add("glitch-blink");
 
+      // Dodanie wiadomości użytkownika
       const userDiv = document.createElement("div");
       userDiv.innerHTML = `<strong>🧿 Ty:</strong> ${input}`;
       output.append(userDiv);
 
+      // Placeholder odpowiedzi
       const replyDiv = document.createElement("div");
       replyDiv.className = "reply";
-      replyDiv.innerHTML = `<strong>🔊 Vox:</strong> <em>...</em>`;
+      replyDiv.innerHTML = `<strong>🔊 Vox:</strong> <em>przetwarzanie...</em>`;
       output.append(replyDiv);
       scrollToElement(replyDiv);
 
       try {
-        const response = await fetch("/api/vox", {
+        const response = await fetch(config.apiEndpoint, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: input, level, model: currentModel })
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ 
+            message: input, 
+            level, 
+            model: config.currentModel,
+            lang: navigator.language.startsWith('pl') ? 'pl' : 'en'
+          })
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
 
         if (data.choices?.[0]?.message?.content) {
           replyDiv.innerHTML = `<strong>🔊 Vox:</strong> ${data.choices[0].message.content}`;
         } else if (data.error) {
-          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> Błąd API: ${data.error.message}`;
+          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> <span class="error">Błąd API: ${data.error.message}</span>`;
         } else {
-          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> Brak odpowiedzi.`;
+          replyDiv.innerHTML = `<strong>🔊 Vox:</strong> <span class="error">Nieoczekiwana struktura odpowiedzi</span>`;
         }
-
+      } catch (err) {
+        console.error("API Error:", err);
+        replyDiv.innerHTML = `<strong>🔊 Vox:</strong> <span class="error">Błąd połączenia: ${err.message}</span>`;
+      } finally {
         setTimeout(() => scrollToElement(replyDiv), 0);
         setTimeout(() => output.classList.remove("glitch-blink"), 500);
-      } catch (err) {
-        console.error(err);
-        replyDiv.innerHTML = `<strong>🔊 Vox:</strong> Błąd po stronie serwera.`;
-        scrollToElement(replyDiv);
+        inputElem.value = "";
+        userInput.dispatchEvent(new Event('input')); // Reset wysokości
+        triggerFlash();
       }
-
-      inputElem.value = "";
-      autoResize(inputElem);
-      triggerFlash();
     }
-
-    document.getElementById("userInput").addEventListener("keydown", function(e) {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendToGPT();
-      }
-    });
   </script>
 </body>
 </html>
