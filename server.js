@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 const API_KEY = process.env.OPENROUTER_API_KEY;
+console.log("🔍 API_KEY =", API_KEY);  // Debug line
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -31,7 +32,12 @@ app.post("/ask", async (req, res) => {
       }
     );
 
-    res.json({ response: response.data.choices[0].message.content });
+    if (response.data?.choices?.[0]?.message?.content) {
+      res.json({ response: response.data.choices[0].message.content });
+    } else {
+      console.error("⚠️ Brak danych w odpowiedzi:", response.data);
+      res.status(500).json({ error: "Invalid response from OpenRouter", data: response.data });
+    }
   } catch (error) {
     console.error("❌ Błąd OpenRouter:", error.response?.data || error.message);
     res.status(500).json({ error: "OpenRouter error", details: error.response?.data || error.message });
