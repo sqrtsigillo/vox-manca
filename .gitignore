@@ -1,0 +1,33 @@
+# Node modules (lokalne zależności)
+node_modules/
+
+# Logi i błędy
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pliki środowiskowe (klucze API, itp.)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Systemowe i edytorowe
+.DS_Store
+Thumbs.db
+
+# Vercel / Render / Netlify
+.vercel/
+.netlify/
+render.yaml
+
+# Artefakty builda
+dist/
+build/
+.out/
+.next/
+
+# IDE
+.vscode/
+.idea/
