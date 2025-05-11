@@ -24,13 +24,14 @@ app.post("/ask", async (req, res) => {
     return res.status(400).json({ error: "Prompt cannot be empty." });
   }
 
+  const payload = model.startsWith("anthropic/")
+    ? { model: model, prompt: input }
+    : { model: model, messages: [{ role: "user", content: input }] };
+
   try {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: model,
-        messages: [{ role: "user", content: input }],
-      },
+      payload,
       {
         headers: {
           Authorization: `Bearer ${API_KEY}`,
@@ -39,8 +40,12 @@ app.post("/ask", async (req, res) => {
       }
     );
 
-    if (response.data?.choices?.[0]?.message?.content) {
-      res.json({ response: response.data.choices[0].message.content });
+    const output =
+      response.data?.choices?.[0]?.message?.content ||
+      response.data?.choices?.[0]?.text;
+
+    if (output) {
+      res.json({ response: output });
     } else {
       console.error("⚠️ Brak danych w odpowiedzi:", response.data);
       res.status(500).json({ error: "Invalid response from OpenRouter", data: response.data });
