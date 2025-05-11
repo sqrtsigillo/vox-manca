@@ -8,7 +8,6 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 const API_KEY = process.env.OPENROUTER_API_KEY;
-console.log("🔍 API_KEY =", API_KEY);  // Debug line
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -17,7 +16,7 @@ app.use(express.static("public"));
 app.post("/ask", async (req, res) => {
   console.log("📥 Odebrano zapytanie:", req.body);
 
-  const input = req.body.prompt || "";
+  const input = req.body.message || "";
 
   if (!input.trim()) {
     console.warn("⚠️ Pusty prompt!");
