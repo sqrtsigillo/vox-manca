@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-const API_KEY = "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";  // Replace this string with your actual OpenRouter key
+const API_KEY = process.env.OPENROUTER_API_KEY;
 
 app.use(cors());
 app.use(bodyParser.json());
