@@ -17,6 +17,10 @@ app.use(express.static("public"));
 app.post("/ask", async (req, res) => {
   const input = req.body.prompt || "";
 
+  if (!input.trim()) {
+    return res.status(400).json({ error: "Prompt cannot be empty." });
+  }
+
   try {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
