@@ -6,17 +6,29 @@
   <title>VoxMancer</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    #bgImage {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: url("https://cdn.glitch.global/dadae2c2-517b-4d3a-ad5b-d780f642a7b9/tlo4.png?v=1746303095828") no-repeat center center fixed;
-      background-size: cover;
-      z-index: -1;
-      opacity: 1;
-    }
+    .output-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.output {
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  box-sizing: border-box;
+}
+
+.output .reply {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
     .error {
       color: #ff4444;
       font-style: italic;
